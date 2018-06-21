@@ -1,4 +1,4 @@
-var ws = new WebSocket('ws://' + location.host + '/call');
+var ws = new WebSocket('wss://' + location.host + '/call');
 var video;
 var webRtcPeer;
 var state = null;
@@ -57,7 +57,21 @@ function start() {
 		var options = {
 		localVideo: undefined,
 	    	remoteVideo: video,
-	    	onicecandidate : onIceCandidate
+	    	onicecandidate : onIceCandidate,
+	    	mediaConstraints:{
+				    "audio": true,
+				    "video": {
+				        "width": {
+				            "min": "640",
+				            "max": "640"
+				        },
+				        "height": {
+				            "min": "480",
+				            "max": "480"
+				        }
+				    }
+				}
+	    	
 		}
 		webRtcPeer = kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options, function(error) {
 				if(error) return onError(error);
@@ -89,6 +103,10 @@ function onOffer(error, offerSdp) {
 	if(error) return onError(error);
 
 	console.info('Invoking SDP offer callback function ' + location.host);
+
+	console.log("~~~~~~~~~~~~~");
+	console.log(offerSdp);
+	console.log("~~~~~~~~~~~~~");
 	var message = {
 		id : 'client',
 		sdpOffer : offerSdp

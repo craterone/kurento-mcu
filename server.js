@@ -3,15 +3,28 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var wsm = require('ws');
+var fs = require('fs');
+var https = require('https');
+// var url = require('url');
 
-app.set('port', process.env.PORT || 8080);
+var options =
+{
+  key:  fs.readFileSync('keys/server.key'),
+  cert: fs.readFileSync('keys/server.crt')
+};
+
+
+
+
+
+// app.set('port', process.env.PORT || 8080);
 
 /*
  * Definition of constants
  */
 
 // Modify here the kurento media server address
-const ws_uri = "ws://localhost:8888/kurento";
+const ws_uri = "ws://172.31.102.151:8888/kurento";
 //const ws_uri = "ws://192.168.15.45:8888/kurento";
 
 /*
@@ -34,11 +47,15 @@ function nextUniqueId() {
  * Server startup
  */
 
-var port = app.get('port');
-var server = app.listen(port, function()
-{
-    console.log('Mixing stream server started');
+
+var server = https.createServer(options, app).listen(8888, function() {
+    console.log('Kurento Tutorial started');
+    // console.log('Open ' + url.format(asUrl) + ' with a WebRTC capable browser');
 });
+// var server = app.listen(port, function()
+// {
+//     console.log('Mixing stream server started');
+// });
 
 var WebSocketServer = wsm.Server;
 var wss = new WebSocketServer(
